@@ -1,5 +1,7 @@
 package com.assignment.employee.controller;
 
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 //
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -68,26 +71,33 @@ public class EmployeeControllerTest {
 		employees.add(emp2);
         String deptNo="d006";
 		 
-		when(service.getAllEmployeesByDeptNo(eq(deptNo))).thenReturn(employees);
+		when(service.getAllEmployeesByDeptNo(anyString())).thenReturn(employees);
+		
+		
+		assertEquals(controller.getAllEmployeesByDeptNo(deptNo).getBody().size(), employees.size());
+		assertEquals(controller.getAllEmployeesByDeptNo(deptNo).getBody(), employees);
+		assertEquals(controller.getAllEmployeesByDeptNo(deptNo).getStatusCode(), HttpStatus.OK);
 
 		
-		  /*RequestBuilder requestBuilder =
-		  MockMvcRequestBuilders.get("/employees/dept/d006")
-		  .accept(MediaType.APPLICATION_JSON);
-		  */
-		 // MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		 
 		
-		//MvcResult result =mockMvc.perform(get("/employees/dept/d006")).andReturn();
+		
+		/*
+		 * MvcResult mvcResult = mockMvc.perform(get("/employees/dept/{deptNo}",deptNo))
+		 * .andReturn();
+		 * 
+		 * System.out.println("mvcresult-----------> "+mvcResult.getResponse().
+		 * getContentAsString());
+		 */
 		
 		
 		
-		  mockMvc.perform( MockMvcRequestBuilders
-			      .get("/employees/dept/{deptNo}",deptNo)
-			      .accept(MediaType.APPLICATION_JSON))
-		          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                  .andExpect(status().isOk());
-
+		/*
+		 * mockMvc.perform( MockMvcRequestBuilders
+		 * .get("/employees/dept/{deptNo}",deptNo) .accept(MediaType.APPLICATION_JSON))
+		 * .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		 * .andExpect(status().isOk());
+		 */
 }
 	
 	
@@ -106,12 +116,21 @@ public class EmployeeControllerTest {
 		
 		when(service.getEmployeesFromHiredafterDateAndsalary(eq(vSalary), eq(date))).thenReturn(employees);
 		
-		 mockMvc.perform( MockMvcRequestBuilders
-			      .get("/employees/hiredate/{somedate}/salary/{salary}",date,vSalary)
-			      .accept(MediaType.APPLICATION_JSON))
-		          .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                 .andExpect(status().isOk());
-       	
+		/*
+		 * mockMvc.perform( MockMvcRequestBuilders
+		 * .get("/employees/hiredate/{somedate}/salary/{salary}",date,vSalary)
+		 * .accept(MediaType.APPLICATION_JSON))
+		 * .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		 * .andExpect(status().isOk());
+		 */
+		
+     
+		
+		
+		assertEquals(controller.getEmployeesFromHiredafterDateAndsalary(vSalary, date).getBody().size(), employees.size());
+		assertEquals(controller.getEmployeesFromHiredafterDateAndsalary(vSalary, date).getBody(), employees);
+		assertEquals(controller.getEmployeesFromHiredafterDateAndsalary(vSalary, date).getStatusCode(), HttpStatus.OK);
+		
 	}	
 	
 	
@@ -123,8 +142,14 @@ public class EmployeeControllerTest {
 		verify(service).deleteEmployeeOnHireDate(date);
 		
 		
-		 mockMvc.perform( MockMvcRequestBuilders.delete("/employees/salaries/employee/hiredate/{somedate}", date) )
-	        .andExpect(status().isNoContent());
+		/*
+		 * mockMvc.perform( MockMvcRequestBuilders.delete(
+		 * "/employees/salaries/employee/hiredate/{somedate}", date) )
+		 * .andExpect(status().isNoContent());
+		 */
+		
+		assertEquals(controller.deleteEmployeeOnHireDate(date).getStatusCode(), HttpStatus.NO_CONTENT);
+		
 	}
 	
 }
