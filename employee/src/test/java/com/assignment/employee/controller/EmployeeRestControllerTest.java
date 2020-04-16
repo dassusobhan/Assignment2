@@ -1,16 +1,20 @@
 package com.assignment.employee.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,8 +65,16 @@ public class EmployeeRestControllerTest {
 				+ "{\"emp_no\":10010,\"birth_date\":\"1963-05-31T18:30:00.000+0000\",\"name\":\"Duangkaew Piveteau\"}]";
 
 		this.mockMvc.perform(get("/employees/dept/{deptNo}", deptNo).accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", is("Sumant Peac")))
+				.andExpect(jsonPath("$[0].emp_no", is(10009)))
+				.andExpect(jsonPath("$[0].birth_date", is("1952-04-18T18:30:00.000+0000")))
 				.andExpect(content().string(containsString(expectedJson)));
+		
+		verify(service,times(1)).getAllEmployeesByDeptNo(anyString());
+		
+
 
 	}
 
@@ -87,9 +99,17 @@ public class EmployeeRestControllerTest {
 		this.mockMvc
 				.perform(get("/employees/hiredate/{somedate}/salary/{salary}", date, vSalary)
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].first_name", is("Kyoichi")))
+				.andExpect(jsonPath("$[0].last_name", is("Maliniak")))
+				.andExpect(jsonPath("$[0].emp_no", is(10005)))
+				.andExpect(jsonPath("$[0].gender", is("M")))
+				.andExpect(jsonPath("$[0].birth_date", is("1932-04-18T18:30:00.000+0000")))
+				.andExpect(jsonPath("$[0].hire_date", is("1955-01-20T18:30:00.000+0000")))
 				.andExpect(content().string(containsString(expectedJson)));
 
+		verify(service,times(1)).getEmployeesFromHiredafterDateAndsalary(vSalary, date);
 	}
 
 	@Test
@@ -101,6 +121,7 @@ public class EmployeeRestControllerTest {
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent());
 
+		verify(service,times(1)).deleteEmployeeOnHireDate(anyString());
 	}
 
 }
